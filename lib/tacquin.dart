@@ -21,7 +21,7 @@ class _TacquinState extends State<Tacquin> {
 
   void gameInit() {
     fin = false;
-    grille.shuffle();
+    //grille.shuffle();
   }
 
   @override
@@ -63,32 +63,7 @@ class _TacquinState extends State<Tacquin> {
               final grilles = grille[index];
 
               return grille[index] != 0
-                  ? InkWell(
-                      onTap: (() {
-                        if (fin) {
-                          return; // si partie finie | zone pleine on ne peut pas changer la valeur
-                        }
-
-                        setState(() {
-                          mouvement(index);
-                          victoire();
-                        });
-                      }),
-                      child: Container(
-                          margin: EdgeInsets.all(1),
-                          height: size.height * 0.6,
-                          color: Colors.grey[900],
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text(
-                              "$grilles",
-                              style: TextStyle(
-                                  color: Color.fromARGB(255, 192, 192, 192),
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )),
-                    )
+                  ? _box(index, size, grilles)
                   : Container();
             }));
   }
@@ -100,18 +75,20 @@ class _TacquinState extends State<Tacquin> {
     if (listEquals(grille, solution1) == true ||
         listEquals(grille, solution2) == true) {
       messageFin("Victoire");
-      fin == true;
+      fin = true;
       return;
     }
   }
 
   mouvement(int index) {
-    if (index - 1 >= 0 && grille[index - 1] == 0 && index % 4 != 0 ||
-        index + 1 < 16 && grille[index + 1] == 0 && (index + 1) % 4 != 0 ||
-        (index - 4 >= 0 && grille[index - 4] == 0) ||
-        (index + 4 < 16 && grille[index + 4] == 0)) {
-      grille[grille.indexOf(0)] = grille[index];
-      grille[index] = 0;
+    if (fin == false) {
+      if (index - 1 >= 0 && grille[index - 1] == 0 && index % 4 != 0 ||
+          index + 1 < 16 && grille[index + 1] == 0 && (index + 1) % 4 != 0 ||
+          (index - 4 >= 0 && grille[index - 4] == 0) ||
+          (index + 4 < 16 && grille[index + 4] == 0)) {
+        grille[grille.indexOf(0)] = grille[index];
+        grille[index] = 0;
+      }
     }
   }
 
@@ -126,6 +103,35 @@ class _TacquinState extends State<Tacquin> {
         ),
         backgroundColor: Colors.grey[900],
       ),
+    );
+  }
+
+  Widget _box(index, size, grilles) {
+    return InkWell(
+      onTap: (() {
+        if (fin) {
+          return; // si partie finie | zone pleine on ne peut pas changer la valeur
+        }
+
+        setState(() {
+          mouvement(index);
+          victoire();
+        });
+      }),
+      child: Container(
+          margin: EdgeInsets.all(1),
+          height: size.height * 0.6,
+          color: Colors.grey[900],
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              "$grilles",
+              style: TextStyle(
+                  color: Color.fromARGB(255, 192, 192, 192),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold),
+            ),
+          )),
     );
   }
 
